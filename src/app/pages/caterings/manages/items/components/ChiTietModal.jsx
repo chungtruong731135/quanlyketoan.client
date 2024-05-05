@@ -44,21 +44,11 @@ const ModalItem = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       setLoadding(true);
-      const res = await requestGET(`api/v1/articles/${id}`);
+      const res = await requestGET(`api/v1/items/${id}`);
 
-      var _data = res?.data ?? null;
+      var _data = res ?? null;
       if (_data) {
-        _data.publishingDate = _data?.publishingDate
-          ? dayjs(_data.publishingDate)
-          : null;
-        _data.articlecatalog = _data?.articlecatalogId
-          ? {
-              value: _data?.articlecatalogId ?? null,
-              label: _data?.articlecatalogName ?? null,
-            }
-          : null;
         form.setFieldsValue({ ..._data });
-        setImage(handleImage(_data?.imageUri ?? "", FILE_URL));
       }
 
       setLoadding(false);
@@ -81,25 +71,14 @@ const ModalItem = (props) => {
     const values = await form.validateFields();
     setBtnLoading(true);
     try {
-      let arrImage = [];
-      image.forEach((i) => {
-        if (i.response) {
-          arrImage.push(i.response.data[0].url);
-        } else {
-          arrImage.push(i.path);
-        }
-      });
-
-      form.setFieldsValue({ imageUri: arrImage.join("##") });
-
       const formData = form.getFieldsValue(true);
       if (id) {
         formData.id = id;
       }
 
       const res = id
-        ? await requestPUT_NEW(`api/v1/articles/${id}`, formData)
-        : await requestPOST_NEW(`api/v1/articles`, formData);
+        ? await requestPUT_NEW(`api/v1/items/${id}`, formData)
+        : await requestPOST_NEW(`api/v1/items`, formData);
 
       if (res.status === 200) {
         toast.success("Cập nhật thành công!");
@@ -150,7 +129,7 @@ const ModalItem = (props) => {
               <div className="row">
                 <div className="col-xl-6 col-lg-6">
                   <FormItem
-                    label="Tên bộ phận"
+                    label="Tên hàng hoá"
                     name="name"
                     rules={[
                       { required: true, message: "Không được để trống!" },
@@ -173,9 +152,22 @@ const ModalItem = (props) => {
                   </FormItem>
                 </div>
 
-                <div className="col-xl-12 col-lg-12">
-                  <FormItem label="Ghi chú" name="description">
-                    <TextArea rows={4} placeholder="" />
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem label="Đơn vị" name="unit">
+                    <Input placeholder="" />
+                  </FormItem>
+                </div>
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem label="Đơn giá" name="price">
+                    <InputNumber
+                      defaultValue={0}
+                      placeholder=""
+                      formatter={(value) =>
+                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                      }
+                      parser={(value) => value.replace(/\./g, "")}
+                      addonAfter='VNĐ'
+                    />
                   </FormItem>
                 </div>
               </div>

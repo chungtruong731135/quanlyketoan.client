@@ -17,7 +17,7 @@ const UsersPage = () => {
       <div className="card card-xl-stretch mb-xl-9">
         <div className="px-3 py-3 border-bottom border-secondary border-bottom-solid d-flex align-items-center justify-content-between flex-wrap">
           <h3 className="card-title fw-bold text-header-td fs-4 mb-0 mb-lg-2">
-            {"Quản lý làn"}
+            {"Quản Lý ngân hàng"}
           </h3>
           <div className="card-toolbar">
             <div className="btn-group me-2 w-xl-250px w-lg-200px">

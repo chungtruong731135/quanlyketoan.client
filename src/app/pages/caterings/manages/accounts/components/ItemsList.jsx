@@ -10,6 +10,7 @@ import { requestPOST, requestDELETE } from "@/utils/baseAPI";
 
 import TableList from "@/app/components/TableList";
 import ModalItem from "./ChiTietModal";
+import { handleImage, deviceTypes } from "@/utils/utils";
 
 const UsersList = (props) => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const UsersList = (props) => {
       try {
         setLoading(true);
         const res = await requestPOST(
-          `api/v1/organizationunits/search`,
+          `api/v1/accounts/search`,
           _.assign(
             {
               advancedSearch: {
@@ -38,7 +39,7 @@ const UsersList = (props) => {
               },
               pageNumber: offset,
               pageSize: size,
-              orderBy: ["createdOn DESC"],
+              // orderBy: ["createdOn DESC"],
             },
             dataSearch
           )
@@ -76,7 +77,7 @@ const UsersList = (props) => {
         break;
 
       case "delete":
-        var res = await requestDELETE(`api/v1/organizationunits/${item.id}`);
+        var res = await requestDELETE(`api/v1/accounts/${item.id}`);
         if (res) {
           toast.success("Thao tác thành công!");
           dispatch(actionsModal.setRandom());
@@ -104,7 +105,7 @@ const UsersList = (props) => {
       ),
     },
     {
-      title: "Tên",
+      title: "Tên tài khoản",
       dataIndex: "name",
       key: "name",
     },
@@ -114,11 +115,15 @@ const UsersList = (props) => {
       key: "code",
     },
     {
-      title: "Mô tả",
-      dataIndex: "description",
-      key: "description",
+      title: "Thuộc ngân hàng",
+      dataIndex: "bankName",
+      key: "bankName",
     },
-
+    {
+      title: "Số dư",
+      dataIndex: "balance",
+      key: "balance",
+    },
     {
       title: "Thao tác",
       dataIndex: "",

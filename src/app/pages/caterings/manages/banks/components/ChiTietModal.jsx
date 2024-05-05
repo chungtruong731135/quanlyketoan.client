@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import {
-  Form,
-  Input,
-  Spin,
-  Checkbox,
-  InputNumber,
-  DatePicker,
-  Select,
-} from "antd";
+import { Form, Input, Spin, Checkbox, InputNumber, DatePicker } from "antd";
 import { Modal, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import _ from "lodash";
@@ -28,14 +20,14 @@ import {
   requestPOST,
 } from "@/utils/baseAPI";
 import ImageUpload from "@/app/components/ImageUpload";
-import { handleImage, deviceTypes } from "@/utils/utils";
+import { handleImage } from "@/utils/utils";
 import { removeAccents } from "@/utils/slug";
 import TDSelect from "@/app/components/TDSelect";
 import TDEditorNew from "@/app/components/TDEditorNew";
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-const { Option } = Select;
+
 const ModalItem = (props) => {
   const dispatch = useDispatch();
   const { token } = authHelper.getAuth();
@@ -48,17 +40,24 @@ const ModalItem = (props) => {
 
   const [loadding, setLoadding] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
-  const [lanes, setLanes] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoadding(true);
-      const res = await requestGET(`api/v1/devices/${id}`);
+      const res = await requestGET(`api/v1/banks/${id}`);
 
       var _data = res?.data ?? null;
       if (_data) {
+        //   _data.publishingDate = _data?.publishingDate
+        //     ? dayjs(_data.publishingDate)
+        //     : null;
+        //   _data.articlecatalog = _data?.articlecatalogId
+        //     ? {
+        //         value: _data?.articlecatalogId ?? null,
+        //         label: _data?.articlecatalogName ?? null,
+        //       }
+        //     : null;
         form.setFieldsValue({ ..._data });
-        setImage(handleImage(_data?.imageUri ?? "", FILE_URL));
       }
 
       setLoadding(false);
@@ -98,8 +97,8 @@ const ModalItem = (props) => {
       }
 
       const res = id
-        ? await requestPUT_NEW(`api/v1/devices/${id}`, formData)
-        : await requestPOST_NEW(`api/v1/devices`, formData);
+        ? await requestPUT_NEW(`api/v1/banks/${id}`, formData)
+        : await requestPOST_NEW(`api/v1/banks`, formData);
 
       if (res.status === 200) {
         toast.success("Cập nhật thành công!");
@@ -119,25 +118,6 @@ const ModalItem = (props) => {
     }
     setBtnLoading(false);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await requestPOST(
-          `api/v1/lanes/search`,
-          _.assign({
-            pageNumber: 1,
-            pageSize: 1000,
-          })
-        );
-        setLanes(res?.data ?? []);
-      } catch (error) {}
-    };
-
-    fetchData();
-
-    return () => {};
-  }, []);
 
   return (
     <Modal
@@ -169,8 +149,21 @@ const ModalItem = (props) => {
               <div className="row">
                 <div className="col-xl-6 col-lg-6">
                   <FormItem
-                    label="Tên thiết bị"
+                    label="Tên ngân hàng"
                     name="name"
+                    rules={[
+                      { required: true, message: "Không được để trống!" },
+                    ]}
+                  >
+                    <Input
+                      placeholder=""
+                    />
+                  </FormItem>
+                </div>
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem
+                    label="Mã"
+                    name="code"
                     rules={[
                       { required: true, message: "Không được để trống!" },
                     ]}
@@ -179,71 +172,38 @@ const ModalItem = (props) => {
                   </FormItem>
                 </div>
 
-                <div className="col-xl-4 col-lg-4">
-                  <FormItem label="Ip" name="ip">
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem
+                    label="Tên rút gọn"
+                    name="shortName"
+                  >
+                    <Input
+                      placeholder=""
+                    />
+                  </FormItem>
+                </div>
+
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem
+                    label="Mã Bin"
+                    name="bin"
+                  >
                     <Input placeholder="" />
                   </FormItem>
                 </div>
 
-                <div className="col-xl-2 col-lg-2">
-                  <FormItem label="Cổng" name="port">
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem
+                    label="Swift code"
+                    name="swiftCode"
+                  >
                     <Input placeholder="" />
                   </FormItem>
                 </div>
-
-                <div className="row">
-                  <div className="col-xl-6 col-lg-6">
-                    <FormItem label="Serial Number" name="sn">
-                      <Input placeholder="" />
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem label="" name="isActive" valuePropName="checked">
+                      <Checkbox>Hoạt động</Checkbox>
                     </FormItem>
-                  </div>
-                </div>
-                <div className="col-xl-6 col-lg-6">
-                  <FormItem label="Loại thiết bị" name="deviceType">
-                    <Select
-                      placeholder="Loại thiết bị"
-                      filterOption={(input, option) =>
-                        option.children
-                          .toLowerCase()
-                          .indexOf(input.toLowerCase()) >= 0
-                      }
-                    >
-                      {deviceTypes.map((item) => {
-                        return (
-                          <Option key={item.id} value={item.id}>
-                            {item.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </FormItem>
-                </div>
-
-                <div className="col-xl-6 col-lg-6">
-                  <FormItem label="Sử dụng cho làn" name="laneId">
-                    <Select
-                      placeholder="Chọn làn"
-                      filterOption={(input, option) =>
-                        option.children
-                          .toLowerCase()
-                          .indexOf(input.toLowerCase()) >= 0
-                      }
-                    >
-                      {lanes.map((item) => {
-                        return (
-                          <Option key={item.id} value={item.id}>
-                            {item.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </FormItem>
-                </div>
-
-                <div className="col-xl-12 col-lg-12">
-                  <FormItem label="Ghi chú" name="note">
-                    <Input placeholder="" />
-                  </FormItem>
                 </div>
               </div>
             </Form>

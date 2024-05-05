@@ -72,44 +72,6 @@ const ModalItem = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await requestPOST(
-          `api/v1/organizationunits/search`,
-          _.assign({
-            pageNumber: 1,
-            pageSize: 1000,
-          })
-        );
-        setOrganizationunits(res?.data ?? []);
-      } catch (error) {}
-    };
-
-    fetchData();
-
-    return () => {};
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await requestPOST(
-          `api/v1/positions/search`,
-          _.assign({
-            pageNumber: 1,
-            pageSize: 1000,
-          })
-        );
-        setPositions(res?.data ?? []);
-      } catch (error) {}
-    };
-
-    fetchData();
-
-    return () => {};
-  }, []);
-
   const handleCancel = () => {
     form.resetFields();
     /*  props.setDataModal(null);
@@ -121,17 +83,6 @@ const ModalItem = (props) => {
     const values = await form.validateFields();
     setBtnLoading(true);
     try {
-      let arrImage = [];
-      image.forEach((i) => {
-        if (i.response) {
-          arrImage.push(i.response.data[0].url);
-        } else {
-          arrImage.push(i.path);
-        }
-      });
-
-      form.setFieldsValue({ imageUrl: arrImage.join("##") });
-
       const formData = form.getFieldsValue(true);
       if (id) {
         formData.id = id;
@@ -189,41 +140,32 @@ const ModalItem = (props) => {
             >
               <div className="row">
                 <div className="col-xl-6 col-lg-6">
-                  <FormItem label="Ảnh đại diện">
-                    <ImageUpload
-                      URL={`${API_URL}/api/v1/attachments/public`}
-                      fileList={image}
-                      onChange={(e) => setImage(e.fileList)}
-                      headers={{
-                        Authorization: `Bearer ${token}`,
-                      }}
-                    />
-                  </FormItem>
-                </div>
-                <div className="col-xl-6 col-lg-6">
                   <FormItem
-                    label="Tên"
-                    name="fullName"
+                    label="Họ"
+                    name="firstName"
                     rules={[
                       { required: true, message: "Không được để trống!" },
                     ]}
                   >
-                    <Input
-                      placeholder=""
-                      onChange={(e) => {
-                        form.setFieldValue(
-                          "code",
-                          removeAccents(e.target.value)
-                        );
-                      }}
-                    />
+                    <Input placeholder="" />
+                  </FormItem>
+                </div>
+                <div className="col-xl-6 col-lg-6">
+                  <FormItem
+                    label="Tên "
+                    name="lastName"
+                    rules={[
+                      { required: true, message: "Không được để trống!" },
+                    ]}
+                  >
+                  <Input placeholder="" />
                   </FormItem>
                 </div>
 
                 <div className="col-xl-6 col-lg-6">
                   <FormItem
-                    label="Mã nhân viên"
-                    name="code"
+                    label="Email"
+                    name="email"
                     rules={[
                       { required: true, message: "Không được để trống!" },
                     ]}
@@ -247,7 +189,6 @@ const ModalItem = (props) => {
                   >
                     <Input
                       placeholder="Tên đăng nhập"
-                      disabled={id ? true : false}
                     />
                   </FormItem>
                 </div>
@@ -297,36 +238,14 @@ const ModalItem = (props) => {
                 )}
 
                 <div className="col-xl-6 col-lg-6">
-                  <FormItem label="Bộ phận" name="organizationUnitId">
-                    <Select allowClear placeholder="Bộ phận">
-                      {organizationunits.map((item) => {
-                        return (
-                          <Option key={item.id} value={item.id}>
-                            {item.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </FormItem>
-                </div>
-
-                <div className="col-xl-6 col-lg-6">
-                  <FormItem label="Chức vụ" name="positionId">
-                    <Select allowClear placeholder="Chức vụ">
-                      {positions.map((item) => {
-                        return (
-                          <Option key={item.id} value={item.id}>
-                            {item.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </FormItem>
-                </div>
-
-                <div className="col-xl-12 col-lg-12">
-                  <FormItem label="Ghi chú" name="note">
-                    <TextArea rows={4} placeholder="" />
+                  <FormItem 
+                    label="Số điện thoại " 
+                    name="phoneNumber"
+                    rules={[
+                      { required: true, message: "Không được để trống!" },
+                    ]}
+                  >
+                    <Input placeholder="" type="phonenumber" />
                   </FormItem>
                 </div>
               </div>

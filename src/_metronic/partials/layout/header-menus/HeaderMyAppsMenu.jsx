@@ -37,7 +37,7 @@ const HeaderMyAppsMenu = () => {
       URL: "/building/dashboard",
     },
     {
-      ApplicationName: "Quản lý suất ăn",
+      ApplicationName: "Quản lý",
       ApplicationCode: "industrial-catering",
       Description: "",
       IsDefaultForAllEmployees: "",

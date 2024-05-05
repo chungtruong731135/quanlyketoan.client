@@ -29,7 +29,7 @@ const UsersList = (props) => {
       try {
         setLoading(true);
         const res = await requestPOST(
-          `api/v1/positions/search`,
+          `api/v1/items/search`,
           _.assign(
             {
               advancedSearch: {
@@ -76,7 +76,7 @@ const UsersList = (props) => {
         break;
 
       case "delete":
-        var res = await requestDELETE(`api/v1/positions/${item.id}`);
+        var res = await requestDELETE(`api/v1/items/${item.id}`);
         if (res) {
           toast.success("Thao tác thành công!");
           dispatch(actionsModal.setRandom());
@@ -104,7 +104,7 @@ const UsersList = (props) => {
       ),
     },
     {
-      title: "Chức vụ",
+      title: "Tên",
       dataIndex: "name",
       key: "name",
     },
@@ -113,13 +113,24 @@ const UsersList = (props) => {
       dataIndex: "code",
       key: "code",
     },
-
     {
-      title: "Mô tả",
-      dataIndex: "note",
-      key: "note",
+      title: "Đơn vị",
+      dataIndex: "unit",
+      key: "unit",
     },
-
+    {
+      title: "Đơn giá",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => (
+        <div>
+          {text && text.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </div>
+      ),
+    },
     {
       title: "Thao tác",
       dataIndex: "",

@@ -58,7 +58,6 @@ const HeaderUserMenu = () => {
           <a
             className="menu-link px-5"
             onClick={() => {
-              navigate("/system/myprofile");
             }}
           >
             <span className="menu-text">Thông tin cá nhân</span>

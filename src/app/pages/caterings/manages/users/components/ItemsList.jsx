@@ -6,7 +6,7 @@ import { Popconfirm } from "antd";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 import * as actionsModal from "@/setup/redux/modal/Actions";
-import { requestPOST, requestDELETE } from "@/utils/baseAPI";
+import { requestPOST, requestDELETE, requestGET } from "@/utils/baseAPI";
 
 import TableList from "@/app/components/TableList";
 import ModalItem from "./ChiTietModal";
@@ -28,21 +28,9 @@ const UsersList = (props) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await requestPOST(
-          `api/users/searchnew`,
-          _.assign(
-            {
-              advancedSearch: {
-                fields: ["name"],
-                keyword: dataSearch?.keywordSearch ?? null,
-              },
-              pageNumber: offset,
-              pageSize: size,
-            },
-            dataSearch
-          )
-        );
-        setDataTable(res?.data ?? []);
+        const res = await requestGET(`api/users`);
+
+        setDataTable(res ?? []);
         setCount(res?.totalCount ?? 0);
         setLoading(false);
       } catch (error) {
@@ -62,10 +50,12 @@ const UsersList = (props) => {
     }
     return () => {};
   }, [offset, size, dataSearch, random]);
+
   useEffect(() => {
     setOffset(1);
     return () => {};
   }, [dataSearch]);
+
   const handleButton = async (type, item) => {
     switch (type) {
       case "chi-tiet":
@@ -108,24 +98,24 @@ const UsersList = (props) => {
       key: "userName",
     },
     {
-      title: "Họ và tên",
-      dataIndex: "fullName",
-      key: "fullName",
+      title: "Họ",
+      dataIndex: "firstName",
+      key: "firstName",
     },
     {
-      title: "Mã nhân viên",
-      dataIndex: "code",
-      key: "code",
+      title: "Tên",
+      dataIndex: "lastName",
+      key: "lastName",
     },
     {
-      title: "Bộ phận ",
-      dataIndex: "organizationUnitName",
-      key: "organizationUnitName",
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: "Chức vụ ",
-      dataIndex: "positionName",
-      key: "positionName",
+      title: "Số điện thoại ",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
     },
     {
       title: "Trạng thái",
@@ -144,45 +134,45 @@ const UsersList = (props) => {
         );
       },
     },
-    {
-      title: "Thao tác",
-      dataIndex: "",
-      key: "",
-      width: 150,
-      render: (text, record) => {
-        return (
-          <div>
-            <a
-              className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
-              data-toggle="m-tooltip"
-              title="Xem chi tiết/Sửa"
-              onClick={() => {
-                handleButton(`chi-tiet`, record);
-              }}
-            >
-              <i className="fa fa-eye"></i>
-            </a>
+    // {
+    //   title: "Thao tác",
+    //   dataIndex: "",
+    //   key: "",
+    //   width: 150,
+    //   render: (text, record) => {
+    //     return (
+    //       <div>
+    //         <a
+    //           className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
+    //           data-toggle="m-tooltip"
+    //           title="Xem chi tiết/Sửa"
+    //           onClick={() => {
+    //             handleButton(`chi-tiet`, record);
+    //           }}
+    //         >
+    //           <i className="fa fa-eye"></i>
+    //         </a>
 
-            <Popconfirm
-              title="Xoá?"
-              onConfirm={() => {
-                handleButton(`delete`, record);
-              }}
-              okText="Xoá"
-              cancelText="Huỷ"
-            >
-              <a
-                className="btn btn-icon btn-bg-light btn-active-color-danger btn-sm me-1 mb-1"
-                data-toggle="m-tooltip"
-                title="Xoá"
-              >
-                <i className="fa fa-trash"></i>
-              </a>
-            </Popconfirm>
-          </div>
-        );
-      },
-    },
+    //         <Popconfirm
+    //           title="Xoá?"
+    //           onConfirm={() => {
+    //             handleButton(`delete`, record);
+    //           }}
+    //           okText="Xoá"
+    //           cancelText="Huỷ"
+    //         >
+    //           <a
+    //             className="btn btn-icon btn-bg-light btn-active-color-danger btn-sm me-1 mb-1"
+    //             data-toggle="m-tooltip"
+    //             title="Xoá"
+    //           >
+    //             <i className="fa fa-trash"></i>
+    //           </a>
+    //         </Popconfirm>
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
   return (
     <>

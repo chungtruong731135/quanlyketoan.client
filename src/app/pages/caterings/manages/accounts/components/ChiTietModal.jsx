@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Form, Input, Spin, Checkbox, InputNumber, DatePicker } from "antd";
+import {
+  Form,
+  Input,
+  Spin,
+  Checkbox,
+  InputNumber,
+  DatePicker,
+  Select,
+} from "antd";
 import { Modal, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import _ from "lodash";
@@ -20,14 +28,14 @@ import {
   requestPOST,
 } from "@/utils/baseAPI";
 import ImageUpload from "@/app/components/ImageUpload";
-import { handleImage } from "@/utils/utils";
+import { handleImage, deviceTypes } from "@/utils/utils";
 import { removeAccents } from "@/utils/slug";
 import TDSelect from "@/app/components/TDSelect";
 import TDEditorNew from "@/app/components/TDEditorNew";
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-
+const { Option } = Select;
 const ModalItem = (props) => {
   const dispatch = useDispatch();
   const { token } = authHelper.getAuth();
@@ -44,19 +52,10 @@ const ModalItem = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       setLoadding(true);
-      const res = await requestGET(`api/v1/positions/${id}`);
+      const res = await requestGET(`api/v1/accounts/${id}`);
 
       var _data = res?.data ?? null;
       if (_data) {
-        //   _data.publishingDate = _data?.publishingDate
-        //     ? dayjs(_data.publishingDate)
-        //     : null;
-        //   _data.articlecatalog = _data?.articlecatalogId
-        //     ? {
-        //         value: _data?.articlecatalogId ?? null,
-        //         label: _data?.articlecatalogName ?? null,
-        //       }
-        //     : null;
         form.setFieldsValue({ ..._data });
         setImage(handleImage(_data?.imageUri ?? "", FILE_URL));
       }
@@ -81,25 +80,14 @@ const ModalItem = (props) => {
     const values = await form.validateFields();
     setBtnLoading(true);
     try {
-      let arrImage = [];
-      image.forEach((i) => {
-        if (i.response) {
-          arrImage.push(i.response.data[0].url);
-        } else {
-          arrImage.push(i.path);
-        }
-      });
-
-      form.setFieldsValue({ imageUri: arrImage.join("##") });
-
       const formData = form.getFieldsValue(true);
       if (id) {
         formData.id = id;
       }
 
       const res = id
-        ? await requestPUT_NEW(`api/v1/positions/${id}`, formData)
-        : await requestPOST_NEW(`api/v1/positions`, formData);
+        ? await requestPUT_NEW(`api/v1/accounts/${id}`, formData)
+        : await requestPOST_NEW(`api/v1/accounts`, formData);
 
       if (res.status === 200) {
         toast.success("Cập nhật thành công!");
@@ -150,32 +138,76 @@ const ModalItem = (props) => {
               <div className="row">
                 <div className="col-xl-6 col-lg-6">
                   <FormItem
-                    label="Chức vụ"
+                    label="Tên tài khoản"
                     name="name"
                     rules={[
                       { required: true, message: "Không được để trống!" },
                     ]}
                   >
-                    <Input
-                      placeholder=""
-                      onChange={(e) => {
-                        form.setFieldValue(
-                          "code",
-                          removeAccents(e.target.value)
-                        );
-                      }}
-                    />
+                    <Input placeholder="" />
                   </FormItem>
                 </div>
+
                 <div className="col-xl-6 col-lg-6">
                   <FormItem label="Mã" name="code">
                     <Input placeholder="" />
                   </FormItem>
                 </div>
-
+                <div className="col-xl- col-lg-6">
+                  <FormItem label="Thuộc ngân hàng" name="bankName">
+                    <TDSelect
+                      placeholder=""
+                      fetchOptions={async (keyword) => {
+                        const res = await requestPOST(
+                          `api/v1/banks/search`,
+                          {
+                            pageNumber: 1,
+                            pageSize: 1000,
+                            advancedSearch: {
+                              fields: ["name"],
+                              keyword: keyword || null,
+                            },
+                          }
+                        );
+                        return res.data.map((item) => ({
+                          ...item,
+                          label: `${item.name}`,
+                          value: item.id,
+                        }));
+                      }}
+                      style={{
+                        width: "100%",
+                      }}
+                      onChange={(value, current) => {
+                        if (value) {
+                          form.setFieldValue("bankId", current?.id);
+                          form.setFieldValue(
+                            "bankName",
+                            current?.name
+                          );
+                        } else {
+                          form.setFieldValue("bankId", null);
+                          form.setFieldValue("bankName", null);
+                        }
+                      }}
+                    />
+                  </FormItem>
+                </div>
+                  <div className="col-xl-6 col-lg-6">
+                    <FormItem label="Số dư" name="balance">
+                      <InputNumber
+                        placeholder=""
+                        formatter={(value) =>
+                          `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        }
+                        parser={(value) => value.replace(/\./g, "")}
+                        addonAfter='VNĐ'
+                      />
+                    </FormItem>
+                  </div>
                 <div className="col-xl-12 col-lg-12">
-                  <FormItem label="Ghi chú" name="note">
-                    <TextArea rows={4} placeholder="" />
+                  <FormItem label="Ghi chú" name="description">
+                    <Input placeholder="" />
                   </FormItem>
                 </div>
               </div>

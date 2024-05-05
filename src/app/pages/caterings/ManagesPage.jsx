@@ -1,20 +1,18 @@
 import { Navigate, Route, Routes, Outlet } from "react-router-dom";
 
-import JobLevel from "./manages/joblevels/JobLevelsPage";
-import Organizations from "./manages/organizations/OrganizationsPage";
+import Banks from "./manages/banks/BanksPage";
+import Items from "./manages/items/ItemsPage";
 import Users from "./manages/users/UsersPage";
-import Devices from "./manages/devices/DevicesPage";
-import Lanes from "./manages/lanes/LanesPage";
+import Accounts from "./manages/accounts/AccountsPage";
 
 const GeneralPage = () => {
   return (
     <Routes>
       <Route element={<Outlet />}>
-        <Route path="jobposition" element={<JobLevel />} />
-        <Route path="organization" element={<Organizations />} />
         <Route path="users" element={<Users />} />
-        <Route path="devices" element={<Devices />} />
-        <Route path="lanes" element={<Lanes />} />
+        <Route path="items" element={<Items />} />
+        <Route path="banks" element={<Banks />} />
+        <Route path="accounts" element={<Accounts />} />
       </Route>
     </Routes>
   );

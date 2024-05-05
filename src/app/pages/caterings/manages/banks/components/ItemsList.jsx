@@ -29,7 +29,7 @@ const UsersList = (props) => {
       try {
         setLoading(true);
         const res = await requestPOST(
-          `api/v1/lanes/search`,
+          `api/v1/banks/search`,
           _.assign(
             {
               advancedSearch: {
@@ -76,7 +76,7 @@ const UsersList = (props) => {
         break;
 
       case "delete":
-        var res = await requestDELETE(`api/v1/lanes/${item.id}`);
+        var res = await requestDELETE(`api/v1/banks/${item.id}`);
         if (res) {
           toast.success("Thao tác thành công!");
           dispatch(actionsModal.setRandom());
@@ -104,16 +104,21 @@ const UsersList = (props) => {
       ),
     },
     {
-      title: "Tên làn",
+      title: "Tên ngân hàng",
       dataIndex: "name",
       key: "name",
     },
+    {
+      title: "Tên rút gọn",
+      dataIndex: "shortName",
+      key: "shortName",
+    },
+
     {
       title: "Mã",
       dataIndex: "code",
       key: "code",
     },
-
     {
       title: "Trạng thái",
       dataIndex: "isActive",
@@ -131,7 +136,6 @@ const UsersList = (props) => {
         );
       },
     },
-
     {
       title: "Thao tác",
       dataIndex: "",
