@@ -123,6 +123,14 @@ const UsersList = (props) => {
       title: "Số dư",
       dataIndex: "balance",
       key: "balance",
+      render: (text) => (
+        <div>
+          {text && text.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </div>
+      ),
     },
     {
       title: "Thao tác",
